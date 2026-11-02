@@ -1,39 +1,16 @@
-name: Android CI Build
-
-on:
-  push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      # 1. OBLIGATOIRE : Récupérer le code source du dépôt en premier
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # 2. Configurer Java (Utilisation de v5 pour éviter la dépréciation)
-      - name: Set up JDK 17
+- name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
+          # Spécifier où se trouvent les fichiers Gradle pour la gestion du cache
+          cache-dependency-path: './votre-sous-dossier/**/*.gradle*'
 
-      # 3. Accorder les permissions d'exécution à gradlew
       - name: Grant execute permission for gradlew
+        working-directory: ./votre-sous-dossier
         run: chmod +x gradlew
 
-      # 4. Lancer la compilation de l'APK Debug
       - name: Build Debug APK
+        working-directory: ./votre-sous-dossier
         run: ./gradlew assembleDebug
-
-      # 5. Conserver l'APK généré comme artefact
-      - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
